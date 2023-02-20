@@ -6,8 +6,8 @@ phases:
       - echo Entered the install phase...
       - apt-get update -y
       - sudo su
-      - yum install httpd -y
-      - service httpd start
+      - sudo apt install apache2
+      - sudo systemctl status apache2
     finally:
       - echo This always runs even if the update or install command fails 
   pre_build:
