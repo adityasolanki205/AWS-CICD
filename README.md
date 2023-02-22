@@ -5,8 +5,8 @@ This is a repository for **learning and implementation** of CICD Pipeline of a G
 1. **HTML website creation**
 2. **Hosting the website on S3 bucket**
 3. **Connecting AWS with GitHub**
-4. **Building the code using CodeBuild**
-4. **Deploying the code**
+4. **Building the code using CodePipeline**
+4. **Integrating and Delivering the updated code**
 
 
 ## Motivation
@@ -28,90 +28,146 @@ For the last few years, I have been part of a great learning curve wherein I hav
     git clone https://github.com/adityasolanki205/AWS-CICD.git
 ```
 
+
 ## Implementation
 
 Below are the steps to setup the enviroment and run the models:
 
+### Step 0 - AWS Free tier account creation
+
+- **AWS Account**: We will be using Free tier version of AWS for our demonstration. If you wish to create a new account please click [here](https://portal.aws.amazon.com/billing/signup?refid=em_127222&redirect_url=https%3A%2F%2Faws.amazon.com%2Fregistration-confirmation#/start/email)
+
+
 ### Step 1 - HTML website creation
 
--  **Website**: Here we could either create a website or copy a basic code from opensource platforms. In our case we have used the code from 
-open source website
+-  **Website**: Here we could either create a website or copy a basic code from opensource platforms. In our case, we have used the code from open source website.
 
 
 ### Step 2 - Hosting the website on S3 bucket
 
--  **Model Training**: Now we will try to train the model.
+-  **Bucket Creation**: Now we will create a S3 bucket.
 
-    i. Click on Train new model button.
+    i. On the AWS console goto S3 buckets and click on "Create bucket"
     
-    ii. Select Classification for objective.
+    ii. Enter Bucket Name and choose the region. 
     
-    iii. In Model details select "Salary" column as target. 
+    iii. Uncheck "Block public access settings from this bucket settings" 
     
-    iv. Leave training options as is.
+    iv. Leave everything as is and click on Create Bucket.
     
-    v. Provide Maximum node hours as per the requirement and enable early stopping and Click on Start Training.
-    
-    vi. With this dataset Training takes around 6 to 8 hours. 
 
-https://user-images.githubusercontent.com/56908240/211068315-23dbcfbb-3176-473d-b8b0-beb7d973d657.mp4
+-  **Configure Static website settings**: 
+
+    i. Open the newly created bucket and goto the properties.
+    
+    ii. Scroll to the bottom and click edit button on "Static website hosting"
+    
+    iii. Click on Enable button and fill the name "index.html" in index document.
+    
+    iv. Click on save changes.
+    
+    
+-  **Grant permissions**:
+
+    i. Goto Bucket Policy, click on policy generator and create a policy for "GetObject" and click on generate policy.
+
+```json
+    {
+    "Version": "2012-10-17",
+    "Id": "Policy1676894398003",
+    "Statement": [
+        {
+            "Sid": "Stmt1676894388176",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::testingstatic/*"
+        }
+      ]
+    }
+```
+
 
 ### Step 3 - Connecting AWS with GitHub
 
--  **Endpoint Creation**:  
+-  **Creating connections**:  
 
-    i. Goto model repository.
+    i. Goto CodePipelines.
     
-    ii. Click on the Trained Model and its relavant version.
+    ii. Navigate to Settings and click on connections.
     
-    iii. Click on Deploy and Test button.
+    iii. Click "Create Connection".
     
-    iv. Click on Deploy on endpoint.
+    iv. Select Private or Enterprise Github and click on Connect to Github.
     
-    v. Fill in all the details as per the requirement.
+    v. Select required repo to be connected and click connect.
+    
 
-https://user-images.githubusercontent.com/56908240/211163203-d713330e-d6cb-4097-bd32-715b8fb0497c.mp4
-
-### Step 4 - Building the code using CodeBuild
+### Step 4 - Building the code using CodePipeline
     
--  **Online Prediction**:
+-  **Source Stage**:
     
-    i. Goto new endpoint created.
+    i. Navigate to CodePipeline.
     
-    ii. Below the endpoint we will see test your model tab with prefilled details. Either prefilled values could be used  to test the model, or we can provide our own values. There is a way to test through API as well. 
+    ii. Click on create new pipeline. Provide the name of the pipeline and click next.
     
-    iii. As soon as we click on Predict an output will be displayed along with confidence percentage
-
-https://user-images.githubusercontent.com/56908240/211163159-c54d2ec2-6958-4364-b8d0-4856330d63fe.mp4
-
--  **Batch Prediction**:
-
-    i. Create a new folder in **automl-testing-table** bucket that we created previously.
+    iii. Under Source provider select "GitHub (Version 2)". Then select the connection, Repository name, Branch name and click next.
     
-    ii. Save the test file we created previously(remove the Target Label "Salary").
     
-    iii. Now in Vertex AI goto Model registry and click on Create Batch Prediction.
+-  **Build Stage**:
     
-    iv. Provide path to test file in the required column. Also provide output path where the output will be saved.
+    i. In the build provider select CodeBuild and either click on create Project if you donot have a project or select the one from dropdown if already created .
     
-    v. Click on continue and create. When the Prediction job completes , a mail will be received.
+    ii. If you clicked on Create project then select Managed Image, Ubuntu Operating system, Standard runtime, choose the latest version of the image, choose new service and click on continue. 
     
-https://user-images.githubusercontent.com/56908240/211206708-84aa8ec8-a812-4774-991c-d8d5f38357b9.mp4
+    iii. In this process a file named Buildspec.yml would be required. It contains shell commands to be run before, during, and after build process. We have provided a basic buildspec.yaml in this repo as well. This file must be present in the Root Directory of the repo.
+    
+    iv. Select Single option and click next
+    
+    
+-  **Deploy Stage**: 
+    
+    i. Select Amazon S3 in deploy stage and the name of the bucket.
+    
+    ii. Check the " Extract File before Deploy " button as well. 
+    
+    iii. Click next and the pipeline will be deployed.
 
-### Step 5 - Deploying the code
 
--  **Batch Prediction Job** : Delete the Batch Predition Job
+### Step 5 - Integrating and Delivering the updated code
 
--  **Endpoint** : To delete endpoint, first remove the endpoint from the model and then delete the endpoint
+-  **Check if the code is working**: 
+    
+    i. Goto Amazon S3 bucket and select the bucket. Goto Properties and go to the bottom and click on "Static website Hosting" URL.
+    
+    ii. Verify if the page is loading perfectly
+    
+    
+-  **Updating the code in Repo**: 
+    
+    i. Now goto the Repo and update index.html
+    
+    ii. Commit the code and push it to the root directory.
+    
+    iii. Verify if the CodePipeline is running.
+    
+    iv. Now click on "Static website Hosting" URL again and verify the changes.
+    
+    
+### Step 6 - Deleting the resources(Optional)
 
--  **Model** : Delete the Model
+-  **Delete all the resources**:
 
--  **Trainig Job** : Delete the training job from the training pipelines tab
+    i. Delete the Pipeline created for the site.
+    
+    ii. Delete S3 bucket created to host the website
+    
+    iii. If no further pipelines are required, delete the S3 bucket created for codepipelines as well.
+    
+    iv. Delete the connection created with GitHub.
 
--  **Dataset** : Delete the Training Dataset from Dataset tab
-
--  **Bucket** : Delete all the buckets created for this process.
 
 ## Credits
-1. Akash Nimare's README.md: https://gist.github.com/akashnimare/7b065c12d9750578de8e705fb4771d2f#file-readme-md
-2. AutoML tables: https://cloud.google.com/vertex-ai/docs/tabular-data/overview
+1. [Build a CI/CD pipeline on AWS](https://medium.com/nerd-for-tech/build-a-ci-cd-pipeline-on-aws-f806e427db22)
+2. [Simple CI/CD pipeline with AWS CodePipeline](https://osusarak.medium.com/ci-cd-with-aws-codepipeline-d8d0538a52f2#:~:text=CI%2FCD%20is%20one%20of,is%2C%20CI%2FCD%20pipeline)
+3. [About Us page](https://www.w3schools.com/howto/howto_css_about_page.asp)
