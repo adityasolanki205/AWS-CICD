@@ -55,6 +55,8 @@ Below are the steps to setup the enviroment and run the models:
     
     iv. Leave everything as is and click on Create Bucket.
     
+https://user-images.githubusercontent.com/56908240/220592446-eca375db-222b-4ec8-81a7-a137e4acece8.mp4
+
 
 -  **Configure Static website settings**: 
 
@@ -65,8 +67,10 @@ Below are the steps to setup the enviroment and run the models:
     iii. Click on Enable button and fill the name "index.html" in index document.
     
     iv. Click on save changes.
-    
-    
+
+https://user-images.githubusercontent.com/56908240/220592552-7c7518d5-f532-4a7c-a84e-3fd015211b0c.mp4
+
+
 -  **Grant permissions**:
 
     i. Goto Bucket Policy, click on policy generator and create a policy for "GetObject" and click on generate policy.
@@ -87,6 +91,8 @@ Below are the steps to setup the enviroment and run the models:
     }
 ```
 
+https://user-images.githubusercontent.com/56908240/220592663-1057ffb7-95c8-42cd-9a8a-98d92a458c90.mp4
+
 
 ### Step 3 - Connecting AWS with GitHub
 
@@ -102,6 +108,8 @@ Below are the steps to setup the enviroment and run the models:
     
     v. Select required repo to be connected and click connect.
     
+https://user-images.githubusercontent.com/56908240/220592761-4598906a-2532-4408-84f1-ca29f0f27c93.mp4
+
 
 ### Step 4 - Building the code using CodePipeline
     
@@ -113,6 +121,8 @@ Below are the steps to setup the enviroment and run the models:
     
     iii. Under Source provider select "GitHub (Version 2)". Then select the connection, Repository name, Branch name and click next.
     
+https://user-images.githubusercontent.com/56908240/220592891-0cb7cc28-3546-42f3-a21e-d378027ec09d.mp4
+
     
 -  **Build Stage**:
     
@@ -124,7 +134,9 @@ Below are the steps to setup the enviroment and run the models:
     
     iv. Select Single option and click next
     
-    
+https://user-images.githubusercontent.com/56908240/220592944-15927a1b-96dd-45a0-afca-a74009b262ec.mp4
+
+
 -  **Deploy Stage**: 
     
     i. Select Amazon S3 in deploy stage and the name of the bucket.
@@ -132,6 +144,8 @@ Below are the steps to setup the enviroment and run the models:
     ii. Check the " Extract File before Deploy " button as well. 
     
     iii. Click next and the pipeline will be deployed.
+
+https://user-images.githubusercontent.com/56908240/220593038-9369c12c-7806-4319-b517-5be38a2f2037.mp4
 
 
 ### Step 5 - Integrating and Delivering the updated code
@@ -160,11 +174,13 @@ Below are the steps to setup the enviroment and run the models:
 
     i. Delete the Pipeline created for the site.
     
-    ii. Delete S3 bucket created to host the website
+    ii. Delete S3 bucket created to host the website.
     
     iii. If no further pipelines are required, delete the S3 bucket created for codepipelines as well.
     
     iv. Delete the connection created with GitHub.
+    
+    v. Delete the CodeBuild Project that were created
 
 
 ## Credits
